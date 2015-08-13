@@ -23,9 +23,11 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
+using NAntRunner.Common;
 using NAntRunner.Controller;
 using NAntRunner.Utils;
 using NAntRunner.Views;
@@ -46,6 +48,7 @@ namespace NAntRunner
             this.InitializeComponent();
             _viewController = new ViewController();
             _viewController.NAntProcess.TargetCompleted += OnTargetCompleted;
+            InitContextMenu();
         }
 
         #region Toolbar Button Handler
@@ -109,6 +112,16 @@ namespace NAntRunner
 
         #endregion
 
+        #region Public Methods
+
+        private void OnStartTarget(object sender, EventArgs e)
+        {
+            _viewController.StartTarget();
+            RefreshView();
+        }
+        
+        #endregion
+
         #region TreeView Handler
 
         private void TreeViewItemOnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -136,14 +149,15 @@ namespace NAntRunner
             _viewController.CurrentNode = selectedNode;
 
             // TODO Open Context Menu
+            NAntTreeView.ContextMenu = _contextMenu;
+
         }
 
         private void TreeViewItemOnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             XmlNode selectedNode = TreeViewUtils.GetNAntNode(sender as TreeViewItem);
             _viewController.CurrentNode = selectedNode;
-
-            // TODO Execute Nant Target or Open Nant File and Show Property
+            
             if (TreeViewUtils.IsNAntTarget(NAntTreeView.SelectedItem as TreeViewItem))
             { 
                 Start_Click(sender, e);
@@ -160,6 +174,51 @@ namespace NAntRunner
 
         private readonly ViewController _viewController;
 
+        private ContextMenu _contextMenu = new ContextMenu { Name = "contextMenu" };
+
+        private MenuItem _start = new MenuItem
+        {
+            Name = "miStart",
+            Header = "Start",
+            Icon = new Image
+            {
+                Source = new BitmapImage(new Uri(AppConstants.IconStart))
+            }
+        };
+        private MenuItem _stop = new MenuItem
+        {
+            Name = "miStop",
+            Header = "Stop",
+            Icon = new Image
+            {
+                Source = new BitmapImage(new Uri(AppConstants.IconStop))
+            }
+        };
+        private MenuItem _edit = new MenuItem
+        {
+            Name = "miEdit",
+            Header = "Edit"
+        };
+        private MenuItem _expandAll = new MenuItem
+        {
+            Name = "miExpandAll",
+            Header = "ExpandAll"
+        };
+        private MenuItem _collapseAll = new MenuItem
+        {
+            Name = "miCollapseAll",
+            Header = "Collapse All"
+        };
+        private MenuItem _settings = new MenuItem
+        {
+            Name = "miSettings",
+            Header = "Settings",
+            Icon = new Image
+            {
+                Source = new BitmapImage(new Uri(AppConstants.IconGear))
+            }
+        };
+
         #endregion
 
         #region Properties
@@ -168,23 +227,43 @@ namespace NAntRunner
 
         #region Private Methods
 
+        private void InitContextMenu()
+        {
+            _contextMenu.Items.Clear();
+            _start.Click += Start_Click;
+            _contextMenu.Items.Add(_start);
+            _stop.Click += Stop_Click;
+            _contextMenu.Items.Add(_stop);
+            _edit.Click += OnEditTarget;
+            _contextMenu.Items.Add(_edit);
+            _expandAll.Click += OnExpandAll;
+            _contextMenu.Items.Add(_expandAll);
+            _collapseAll.Click += OnCollapseAll;
+            _contextMenu.Items.Add(_collapseAll);
+            _settings.Click += Settings_Click;
+            _contextMenu.Items.Add(_settings);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private void RefreshView()
         {
             bool isNAntRunning = _viewController.IsWorking;
             bool isNodeStartable = TreeViewUtils.IsNAntTarget(NAntTreeView.SelectedItem as TreeViewItem);
 
             // Refresh buttons
-            Start.IsEnabled = isNodeStartable & !isNAntRunning;
-            Refresh.IsEnabled = !isNAntRunning && _viewController.Filename != null;
-            Help.IsEnabled = true;
-            Settings.IsEnabled = !isNAntRunning;
-            Stop.IsEnabled = isNAntRunning;
+            btnStart.IsEnabled = isNodeStartable & !isNAntRunning;
+            btnRefresh.IsEnabled = !isNAntRunning && _viewController.Filename != null;
+            btnHelp.IsEnabled = true;
+            btnSettings.IsEnabled = !isNAntRunning;
+            btnStop.IsEnabled = isNAntRunning;
 
             // Refresh menus
-            //m_MenuStart.Enabled = isNodeStartable && !isNAntRunning;
-            //m_MenuStop.Enabled = isNodeStartable && isNAntRunning;
-            //m_MenuEdit.Enabled = isNodeStartable && !isNAntRunning;
-            //m_MenuOption.Enabled = !isNAntRunning;
+            _start.IsEnabled = isNodeStartable && !isNAntRunning;
+            _stop.IsEnabled = isNodeStartable && isNAntRunning;
+            _edit.IsEnabled = isNodeStartable && !isNAntRunning;
+            _settings.IsEnabled = !isNAntRunning;
         }
 
         #endregion
@@ -249,7 +328,7 @@ namespace NAntRunner
         private void OnCollapseAll(object sender, EventArgs e)
         {
             var tvi = NAntTreeView.SelectedItem as TreeViewItem;
-            if (tvi != null) tvi.IsExpanded = true;
+            if (tvi != null) tvi.IsExpanded = false;
         }
         
         /// <summary>
@@ -385,7 +464,12 @@ namespace NAntRunner
 
         int IVsSolutionEvents2.OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
         {
-            // TODO
+            // If autoload specified, just load default build file
+            if (Settings.Default.NANT_AUTOLOAD)
+            {
+                _viewController.Filename = _viewController.DefaultBuildFile;
+                OnReload(this, null);
+            }
             return VSConstants.S_OK;
         }
 
@@ -401,7 +485,19 @@ namespace NAntRunner
 
         int IVsSolutionEvents2.OnAfterCloseSolution(object pUnkReserved)
         {
-            // TODO
+            // If NAnt process is running, stop it
+            if (_viewController.IsWorking)
+            {
+                _viewController.StopTarget();
+                RefreshView();
+            }
+
+            // If autoload specified, just clean current build file
+            if (Settings.Default.NANT_AUTOLOAD)
+            {
+                _viewController.Filename = null;
+                NAntTreeView.Items.Clear();
+            }
             return VSConstants.S_OK;
         }
 

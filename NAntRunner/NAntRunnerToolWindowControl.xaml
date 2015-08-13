@@ -12,22 +12,39 @@
         <DockPanel>
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar x:Name="toolBar">
-                    <Button x:Name="Open" Click="Open_Click" ToolTip="Open Build File">
+                    <Button x:Name="btnOpen" Click="Open_Click" ToolTip="Open Build File">
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="pack://application:,,,/Resources/Open_6529.png" />
+                            <Image Source="pack://application:,,,/NAntRunner;component/Resources/Open_6529.png" />
                             <TextBlock Margin="3,0,0,0">Open</TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button x:Name="Refresh" Click="Refresh_Click" ToolTip="Refresh">
+                    <Button x:Name="btnRefresh" Click="Refresh_Click" ToolTip="Refresh">
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="pack://application:,,,/Resources/Restart_6322.png" />
+                            <Image Source="pack://application:,,,/NAntRunner;component/Resources/Restart_6322.png" />
                             <TextBlock Margin="3,0,0,0">Refresh</TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button x:Name="Start" Content="Start" Click="Start_Click"/>
-                    <Button x:Name="Stop" Content="Stop" Click="Stop_Click"/>
-                    <Button x:Name="Settings" Content="Settings" Click="Settings_Click"/>
-                    <Button x:Name="Help" Content="Help" Click="Help_Click"/>
+                    <Button x:Name="btnStart" Click="Start_Click" ToolTip="Start">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="pack://application:,,,/NAntRunner;component/Resources/Symbols_Play_16xLG.png" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="btnStop" Click="Stop_Click" ToolTip="Stop">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="pack://application:,,,/NAntRunner;component/Resources/Symbols_Stop_16xLG.png" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="btnSettings" Click="Settings_Click" ToolTip="Settings">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="pack://application:,,,/NAntRunner;component/Resources/gear_16xLG.png" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="btnHelp" Click="Help_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="pack://application:,,,/NAntRunner;component/Resources/Symbols_Help_and_inclusive_16xLG.png" />
+                            <TextBlock Margin="3,0,0,0">Help</TextBlock>
+                        </StackPanel>
+                    </Button>
                 </ToolBar>
             </ToolBarTray>
             <TreeView x:Name="NAntTreeView">

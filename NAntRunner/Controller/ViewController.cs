@@ -130,7 +130,7 @@ namespace NAntRunner.Controller
             VisualStudioUtils.ShowFile(ApplicationObject, Filename);
 
             // Refocus AddIn (lost while opening the file)
-            VisualStudioUtils.ShowWindow(ApplicationObject, "NAntAddin");
+            VisualStudioUtils.ShowWindow(ApplicationObject, Resources.Common.NAntRunner);
 
             // Display the node's line within the file
             VisualStudioUtils.ShowLine(ApplicationObject, Filename, CurrentNode.LineNumber, false);

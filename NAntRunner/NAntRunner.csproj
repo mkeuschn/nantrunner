@@ -101,22 +101,22 @@
     <VSCTCompile Include="NAntRunnerVSPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
-    <Content Include="Resources\action_Cancel_16xLG.png" />
-    <Content Include="Resources\Bullets_11690.png" />
-    <Content Include="Resources\DynamicHelp_5659.png" />
-    <Content Include="Resources\folder_Open_16xLG.png" />
-    <Content Include="Resources\gear_16xLG.png" />
+    <Resource Include="Resources\action_Cancel_16xLG.png" />
+    <Resource Include="Resources\Bullets_11690.png" />
+    <Resource Include="Resources\DynamicHelp_5659.png" />
+    <Resource Include="Resources\folder_Open_16xLG.png" />
+    <Resource Include="Resources\gear_16xLG.png" />
     <Content Include="Resources\NAntRunnerToolWindowCommand.png" />
     <Content Include="Resources\NAntRunnerVSPackage.ico" />
-    <Content Include="Resources\Open_6529.png" />
-    <Content Include="Resources\Restart_6322.png" />
-    <Content Include="Resources\startwithoutdebugging_6556.png" />
-    <Content Include="Resources\Stroke.png" />
-    <Content Include="Resources\Symbols_Help_and_inclusive_16xLG.png" />
-    <Content Include="Resources\Symbols_Play_16xLG.png" />
-    <Content Include="Resources\Symbols_Stop_16xLG.png" />
-    <Content Include="Resources\Synchronize_16xLG.png" />
-    <Content Include="Resources\test_16xLG.png" />
+    <Resource Include="Resources\Open_6529.png" />
+    <Resource Include="Resources\Restart_6322.png" />
+    <Resource Include="Resources\startwithoutdebugging_6556.png" />
+    <Resource Include="Resources\Stroke.png" />
+    <Resource Include="Resources\Symbols_Help_and_inclusive_16xLG.png" />
+    <Resource Include="Resources\Symbols_Play_16xLG.png" />
+    <Resource Include="Resources\Symbols_Stop_16xLG.png" />
+    <Resource Include="Resources\Synchronize_16xLG.png" />
+    <Resource Include="Resources\test_16xLG.png" />
     <Content Include="stylesheet.css" />
   </ItemGroup>
   <ItemGroup>

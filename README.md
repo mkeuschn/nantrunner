@@ -1,20 +1,21 @@
-# nantrunner
-NAnt Task Runner VSIX
+# NAnt Task Runner (created from NAntAddin - http://sourceforge.net/projects/nantaddin/)
+NAnt Task Runner as Visual Studio Package (VSIX)
 
-Parse a nant build file and create a Tree View. From this tree view you can execute the NAnt Targets.
+# Features
+ - Parse NAnt File and create Tree View
+ - Start/Stop NAnt Target 
+ - Open NAnt File
+ - NAnt Output is shown in Output Window
 
+# Requirements
+ - NAnt Installation
 
 # TODO
 
 ## Priority Level 1
- - Execution on node Double Click
  - Jump to property on Double Click
 
 ## Priority Level 2
- - Images in Toolbar
- - Store Build File Location
- - Store NAnt Location
- - Settings Dialog
 
 ## Priority Level 3
  - About Dialog
