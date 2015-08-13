@@ -74,11 +74,8 @@
     </Compile>
     <Compile Include="Utils\TreeViewUtils.cs" />
     <Compile Include="Utils\VisualStudioUtils.cs" />
-    <Compile Include="Views\SettingsDialog.xaml.cs">
-      <DependentUpon>SettingsDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\TextField.xaml.cs">
-      <DependentUpon>TextField.xaml</DependentUpon>
+    <Compile Include="Views\SettingsWindow.xaml.cs">
+      <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="XML\XmlAttribute.cs" />
     <Compile Include="XML\XmlDescriptor.cs" />
@@ -246,11 +243,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SettingsDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\TextField.xaml">
+    <Page Include="Views\SettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

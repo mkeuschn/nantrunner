@@ -16,13 +16,24 @@ using System.Windows.Shapes;
 namespace NAntRunner.Views
 {
     /// <summary>
-    /// Interaction logic for SettingsDialog.xaml
+    /// Interaction logic for SettingsWindow.xaml
     /// </summary>
-    public partial class SettingsDialog : UserControl
+    public partial class SettingsWindow : Window
     {
-        public SettingsDialog()
+        public SettingsWindow()
         {
             InitializeComponent();
+        }
+
+        private void OnSave(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.Save();
+            this.Close();
+        }
+
+        private void OnCancel(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

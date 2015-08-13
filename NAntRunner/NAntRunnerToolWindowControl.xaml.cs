@@ -4,25 +4,22 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
-using System.Windows.Forms;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
-using EnvDTE;
-using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.Win32;
 using NAntRunner.Controller;
 using NAntRunner.Utils;
+using NAntRunner.Views;
 using NAntRunner.XML;
-using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 
 namespace NAntRunner
 {
-    using Microsoft.Win32;
-    using System;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Windows;
-    using System.Windows.Controls;
-
     /// <summary>
     /// Interaction logic for NAntRunnerToolWindowControl.
     /// </summary>
@@ -52,8 +49,7 @@ namespace NAntRunner
 
             // Display OpenFileDialog by calling ShowDialog method 
             bool? result = openFileDialog.ShowDialog();
-
-
+            
             // Get the selected file name and display in a TextBox 
             if (result == true)
             {
@@ -65,24 +61,26 @@ namespace NAntRunner
 
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
-
+            // TODO Reload Content From the same file
         }
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
-            var test = "c:\\Program Files (x86)\\NAnt 0.92\bin\\NAnt.exe";
             _viewController.StartTarget();
             RefreshView();
         }
 
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
-
+            _viewController.StopTarget();
+            RefreshView();
         }
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-
+            // TODO Open Settings Dialog
+            SettingsWindow settingsWindow = new SettingsWindow();
+            settingsWindow.Show();
         }
 
         [SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions", Justification = "Sample code")]
@@ -90,8 +88,8 @@ namespace NAntRunner
         private void Help_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(
-                string.Format(System.Globalization.CultureInfo.CurrentUICulture, "Invoked '{0}'", this.ToString()),
-                "NAntBuilderToolWindow");
+                string.Format(CultureInfo.CurrentUICulture, "Invoked '{0}'", this),
+                "NAnt Runner About Dialog");
         }
 
         #endregion
@@ -102,7 +100,6 @@ namespace NAntRunner
         {
             // Get the selected node
             XmlNode selectedNode = TreeViewUtils.GetNAntNode(sender as TreeViewItem);
-
             _viewController.CurrentNode = selectedNode;
 
             /*
@@ -120,19 +117,33 @@ namespace NAntRunner
 
         private void TreeViewItemOnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            throw new NotImplementedException();
+            XmlNode selectedNode = TreeViewUtils.GetNAntNode(sender as TreeViewItem);
+            _viewController.CurrentNode = selectedNode;
+
+            // TODO Open Context Menu
         }
 
         private void TreeViewItemOnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            throw new NotImplementedException();
+            XmlNode selectedNode = TreeViewUtils.GetNAntNode(sender as TreeViewItem);
+            _viewController.CurrentNode = selectedNode;
+
+            // TODO Execute Nant Target or Open Nant File and Show Property
+            if (TreeViewUtils.IsNAntTarget(NAntTreeView.SelectedItem as TreeViewItem))
+            { 
+                Start_Click(sender, e);
+            }
+            else
+            {
+                // TODO Open Nant File at property position
+            }
         }
 
         #endregion
 
         #region Members
 
-        private ViewController _viewController;
+        private readonly ViewController _viewController;
 
         #endregion
 
@@ -144,26 +155,27 @@ namespace NAntRunner
 
         private void RefreshView()
         {
+            bool isNAntRunning = _viewController.IsWorking;
+            bool isNodeStartable = TreeViewUtils.IsNAntTarget(NAntTreeView.SelectedItem as TreeViewItem);
 
+            // Refresh buttons
+            Start.IsEnabled = isNodeStartable & !isNAntRunning;
+            Refresh.IsEnabled = !isNAntRunning && _viewController.Filename != null;
+            Help.IsEnabled = true;
+            Settings.IsEnabled = !isNAntRunning;
+            Stop.IsEnabled = isNAntRunning;
+
+            // Refresh menus
+            //m_MenuStart.Enabled = isNodeStartable && !isNAntRunning;
+            //m_MenuStop.Enabled = isNodeStartable && isNAntRunning;
+            //m_MenuEdit.Enabled = isNodeStartable && !isNAntRunning;
+            //m_MenuOption.Enabled = !isNAntRunning;
         }
 
         #endregion
 
         #region Custom Events
-
-        /// <summary>
-        /// The UserControl has been loaded.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The event arguments.</param>
-
-
-        public void OnLoad(object sender, EventArgs e)
-        {
-            RefreshView();
-        }
-
-
+       
         /// <summary>
         /// The refresh button has been clicked or a new file has been loaded.
         /// The current TreeView will be reloaded.
@@ -193,21 +205,16 @@ namespace NAntRunner
                 }
                 catch (Exception e1)
                 {
-                    System.Windows.Forms.MessageBox.Show("Error while loading file '"
-                        + _viewController.Filename + "'."
-                        + "\n"
-                        + e1.Message,
-                        "NAntAddin Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
+                    var error = "Error while loading file '"
+                                + _viewController.Filename + "'."
+                                + "\n"
+                                + e1.Message;
+                    MessageBox.Show(error, "NAnt Runner Error",MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             
             RefreshView();
         }
-
-
-        
         
         /// <summary>
         /// Open the script file at the selected target location.
@@ -217,35 +224,6 @@ namespace NAntRunner
         private void OnEditTarget(object sender, EventArgs e)
         {
             _viewController.SelectNodeLine();
-        }
-
-        /// <summary>
-        /// Display the context menu when the TreeView is clicked.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnClick(object sender, EventArgs e)
-        {
-            // Check right click
-            MouseEventArgs evt = e as MouseEventArgs;
-            if (evt.Button == MouseButtons.Right)
-            {
-                // Open the context menu at the good position.
-                
-                // TODO Context Menu
-                //TreeViewUtils.ShowContext(NAntTreeView, m_MenuContext, evt, MousePosition);
-            }
-        }
-        
-        /// <summary>
-        /// A double click has been done on a node.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnDoubleClick(object sender, EventArgs e)
-        {
-            if (TreeViewUtils.IsNAntTarget(NAntTreeView.SelectedItem as TreeViewItem))
-                OnStartTarget(sender, e);
         }
         
         /// <summary>
@@ -270,55 +248,6 @@ namespace NAntRunner
             if (tvi != null) tvi.IsExpanded = true;
         }
         
-        /// <summary>
-        /// Display AboutBox dialog
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnAbout(object sender, EventArgs e)
-        {
-            // TODO Open About Dialog
-            //new AboutBox().ShowDialog();
-        }
-
-        /// <summary>
-        /// Display OptionsBox dialog
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnOptions(object sender, EventArgs e)
-        {
-            // TODO create Settings Dialog
-            /*
-            if (new OptionsView().ShowDialog() == DialogResult.OK)
-            {
-                OnReload(sender, e);
-            }
-            */
-        }
-
-        /// <summary>
-        /// The start button has been clicked to run a NAnt target task.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The event arguments.</param>
-        private void OnStartTarget(object sender, EventArgs e)
-        {
-            _viewController.StartTarget();
-            RefreshView();
-        }
-
-        /// <summary>
-        /// The stop button has been clicked to stop a NAnt target task.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The event.</param>
-        private void OnStopTarget(object sender, EventArgs e)
-        {
-            _viewController.StopTarget();
-            RefreshView();
-        }
-
         /// <summary>
         /// The current NAntProcess has been cancelled and stopped.
         /// </summary>
