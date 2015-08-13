@@ -4,17 +4,13 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
-using System;
-using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Runtime.InteropServices;
+using EnvDTE;
+using EnvDTE80;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Win32;
 
 namespace NAntRunner
 {
@@ -37,11 +33,11 @@ namespace NAntRunner
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
-    [Guid(NAntRunnerVSPackage.PackageGuidString)]
+    [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(NAntRunnerToolWindow))]
-    public sealed class NAntRunnerVSPackage : Package
+    public sealed class NAntRunnerVSPackage : Package, IVsShellPropertyEvents
     {
         /// <summary>
         /// NAntRunnerVSPackage GUID string.
@@ -58,6 +54,14 @@ namespace NAntRunner
             // not sited yet inside Visual Studio environment. The place to do all the other
             // initialization is the Initialize method.
         }
+        
+        #region Properties
+
+        public DTE Dte { get; set; }
+
+        public DTE2 Dte2 { get; set; }
+
+        #endregion
 
         #region Package Members
 
@@ -69,6 +73,33 @@ namespace NAntRunner
         {
             base.Initialize();
             NAntRunnerToolWindowCommand.Initialize(this);
+
+            IVsShell shellService = GetService(typeof(SVsShell)) as IVsShell;
+            if (shellService != null)
+                ErrorHandler.ThrowOnFailure(
+                  shellService.AdviseShellPropertyChanges(this, out cookie));
+        }
+        
+        uint cookie;
+
+        public int OnShellPropertyChange(int propid, object var)
+        {
+            // when zombie state changes to false, finish package initialization
+            if ((int)__VSSPROPID.VSSPROPID_Zombie == propid)
+            {
+                if ((bool)var == false)
+                {
+                    Dte = GetService(typeof(SDTE)) as DTE;
+                    Dte2 = GetService(typeof(SDTE)) as DTE2;
+                    IVsShell shellService = GetService(typeof(SVsShell)) as IVsShell;
+
+                    if (shellService != null)
+                        ErrorHandler.ThrowOnFailure(
+                          shellService.UnadviseShellPropertyChanges(this.cookie));
+                    this.cookie = 0;
+                }
+            }
+            return VSConstants.S_OK;
         }
 
         #endregion

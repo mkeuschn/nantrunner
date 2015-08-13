@@ -1,0 +1,24 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="NAntRunner" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="NANT_COMMAND" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Program Files (x86)\NAnt 0.92\bin\NAnt</Value>
+    </Setting>
+    <Setting Name="NANT_PARAMS" Type="System.String" Scope="User">
+      <Value Profile="(Default)">-buildfile:"{0}" {1}</Value>
+    </Setting>
+    <Setting Name="NANT_SPLIT_TARGETS" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="NANT_VERBOSE" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="NANT_CLEAR_OUTPUT" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="NANT_AUTOLOAD" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

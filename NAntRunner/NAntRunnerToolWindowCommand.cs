@@ -49,8 +49,8 @@ namespace NAntRunner
             OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (commandService != null)
             {
-                var menuCommandID = new CommandID(CommandSet, CommandId);
-                var menuItem = new MenuCommand(this.ShowToolWindow, menuCommandID);
+                var menuCommandId = new CommandID(CommandSet, CommandId);
+                var menuItem = new MenuCommand(this.ShowToolWindow, menuCommandId);
                 commandService.AddCommand(menuItem);
             }
         }
@@ -67,13 +67,7 @@ namespace NAntRunner
         /// <summary>
         /// Gets the service provider from the owner package.
         /// </summary>
-        private IServiceProvider ServiceProvider
-        {
-            get
-            {
-                return this.package;
-            }
-        }
+        public IServiceProvider ServiceProvider => package;
 
         /// <summary>
         /// Initializes the singleton instance of the command.

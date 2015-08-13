@@ -31,6 +31,13 @@
                 </ToolBar>
             </ToolBarTray>
             <TreeView x:Name="NAntTreeView">
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="{x:Type TreeViewItem}">
+                        <EventSetter Event="MouseDoubleClick" Handler="TreeViewItemOnMouseDoubleClick"/>
+                        <EventSetter Event="MouseLeftButtonUp" Handler="TreeViewItemOnMouseLeftButtonUp"/>
+                        <EventSetter Event="MouseRightButtonUp" Handler="TreeViewItemOnMouseRightButtonUp"/>
+                    </Style>
+                </TreeView.ItemContainerStyle>
             </TreeView>
         </DockPanel>
     </Grid>
