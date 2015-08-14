@@ -4,6 +4,7 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using EnvDTE;
@@ -11,6 +12,7 @@ using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using NAntRunner.Utils;
 
 namespace NAntRunner
 {
@@ -37,6 +39,8 @@ namespace NAntRunner
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(NAntRunnerToolWindow))]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasMultipleProjects_string)]
     public sealed class NAntRunnerVSPackage : Package, IVsShellPropertyEvents
     {
         /// <summary>
@@ -54,7 +58,17 @@ namespace NAntRunner
             // not sited yet inside Visual Studio environment. The place to do all the other
             // initialization is the Initialize method.
         }
-        
+
+        #region Members
+
+        private IVsSolution _solution;
+        private SolutionEventHandler _solutionEventHandler;
+        private uint _solutionEventsCookie = 0;
+
+        private uint _cookie;
+
+        #endregion
+
         #region Properties
 
         public DTE Dte { get; set; }
@@ -77,10 +91,29 @@ namespace NAntRunner
             IVsShell shellService = GetService(typeof(SVsShell)) as IVsShell;
             if (shellService != null)
                 ErrorHandler.ThrowOnFailure(
-                  shellService.AdviseShellPropertyChanges(this, out cookie));
+                  shellService.AdviseShellPropertyChanges(this, out _cookie));
+
+            _solution = base.GetService(typeof(SVsSolution)) as IVsSolution;
+
+            // Solution Event Handling
+            if (_solution != null)
+            {
+                _solutionEventHandler = new SolutionEventHandler(this);
+                _solution.AdviseSolutionEvents(_solutionEventHandler, out _solutionEventsCookie);
+            }
+
         }
-        
-        uint cookie;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_solutionEventsCookie != 0)
+            {
+                _solution.UnadviseSolutionEvents(_solutionEventsCookie);
+                _solutionEventsCookie = 0;
+            }
+            _solutionEventHandler = null;
+            base.Dispose(disposing);
+        }
 
         public int OnShellPropertyChange(int propid, object var)
         {
@@ -95,11 +128,20 @@ namespace NAntRunner
 
                     if (shellService != null)
                         ErrorHandler.ThrowOnFailure(
-                          shellService.UnadviseShellPropertyChanges(this.cookie));
-                    this.cookie = 0;
+                          shellService.UnadviseShellPropertyChanges(this._cookie));
+                    this._cookie = 0;
                 }
             }
             return VSConstants.S_OK;
+        }
+
+        #endregion
+
+        #region Solution Event Handling 
+
+        internal void HandleSolutionEvent(string eventName)
+        {
+            Debug.WriteLine(eventName);
         }
 
         #endregion
