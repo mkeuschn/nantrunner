@@ -1,5 +1,5 @@
-# NAnt Task Runner (created from NAntAddin - http://sourceforge.net/projects/nantaddin/)
-NAnt Task Runner as Visual Studio Package (VSIX)
+# NAnt Task Runner 
+NAnt Task Runner as Visual Studio Package (VSIX). NAnt Runner is based on NAntAddin - http://sourceforge.net/projects/nantaddin/.
 
 # Features
  - Parse NAnt File and create Tree View
@@ -9,13 +9,3 @@ NAnt Task Runner as Visual Studio Package (VSIX)
 
 # Requirements
  - NAnt Installation
-
-# TODO
-
-## Priority Level 1
- - Jump to property on Double Click
-
-## Priority Level 2
-
-## Priority Level 3
- - About Dialog
