@@ -1,21 +1,24 @@
 ﻿using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
+using NAntRunner.Controller;
 
 namespace NAntRunner.Utils
 {
-    public class SolutionEventHandler : IVsSolutionEvents
+    public class SolutionEventsHandler : IVsSolutionEvents
     {
         #region Members
 
-        private NAntRunnerVsPackage _package;
+        private readonly NAntRunnerToolWindowControl _control;
+        private readonly ViewController _viewController;
 
         #endregion
 
-        #region Construktor
+        #region Constructor
 
-        public SolutionEventHandler(NAntRunnerVsPackage package)
+        public SolutionEventsHandler(NAntRunnerToolWindowControl control)
         {
-            _package = package;
+            _control = control;
+            _viewController = ViewController.Instance;
         }
 
         #endregion
@@ -24,61 +27,78 @@ namespace NAntRunner.Utils
 
         public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
         {
-            _package.HandleSolutionEvent("OnAfterOpenProject");
+            // Your Implementation here!
             return VSConstants.S_OK;
         }
 
         public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
         {
-            _package.HandleSolutionEvent("OnQueryCloseProject");
+            // Your Implementation here!
             return VSConstants.S_OK;
         }
 
         public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
         {
-            _package.HandleSolutionEvent("OnBeforeCloseProject");
+            // Your Implementation here!
             return VSConstants.S_OK;
         }
 
         public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
         {
-            _package.HandleSolutionEvent("OnAfterLoadProject");
+            // Your Implementation here!
             return VSConstants.S_OK;
         }
 
         public int OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel)
         {
-            _package.HandleSolutionEvent("OnQueryUnloadProject");
+            // Your Implementation here!
             return VSConstants.S_OK;
         }
 
         public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
         {
-            _package.HandleSolutionEvent("OnBeforeUnloadProject");
+            // Your Implementation here!
             return VSConstants.S_OK;
         }
 
         public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
         {
-            _package.HandleSolutionEvent("OnAfterOpenSolution");
+            // If autoload specified, just load default build file
+            if (Settings.Default.NANT_AUTOLOAD)
+            {
+                _viewController.Filename = _viewController.DefaultBuildFile;
+                _control.OnReload(this, null);
+            }
             return VSConstants.S_OK;
         }
 
         public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
         {
-            _package.HandleSolutionEvent("OnQueryCloseSolution");
+            // Your Implementation here!
             return VSConstants.S_OK;
         }
 
         public int OnBeforeCloseSolution(object pUnkReserved)
         {
-            _package.HandleSolutionEvent("OnBeforeCloseSolution");
+            // Your Implementation here!
             return VSConstants.S_OK;
         }
 
         public int OnAfterCloseSolution(object pUnkReserved)
         {
-            _package.HandleSolutionEvent("OnAfterCloseSolution");
+            // If NAnt process is running, stop it
+            if (_viewController.IsWorking)
+            {
+                _viewController.StopTarget();
+                _control.RefreshView();
+            }
+
+            // If autoload specified, just clean current build file
+            if (Settings.Default.NANT_AUTOLOAD)
+            {
+                _viewController.Filename = null;
+                _control.NAntTreeView.Items.Clear();
+            }
             return VSConstants.S_OK;
         }
 

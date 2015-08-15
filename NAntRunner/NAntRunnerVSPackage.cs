@@ -41,7 +41,7 @@ namespace NAntRunner
     [ProvideToolWindow(typeof(NAntRunnerToolWindow))]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasMultipleProjects_string)]
-    public sealed class NAntRunnerVsPackage : Package, IVsShellPropertyEvents
+    public sealed class NAntRunnerVsPackage : Package
     {
         /// <summary>
         /// NAntRunnerVSPackage GUID string.
@@ -61,11 +61,10 @@ namespace NAntRunner
 
         #region Members
 
-        private IVsSolution _solution;
-        private SolutionEventHandler _solutionEventHandler;
-        private uint _solutionEventsCookie = 0;
+        private ShellPropertyEventsHandler _shellPropertyEventsHandler;
 
-        private uint _cookie;
+        private SolutionEventsHandler _solutionEventsHandler;
+        private uint _solutionEventsCookie = 0;
 
         #endregion
 
@@ -74,6 +73,10 @@ namespace NAntRunner
         public DTE Dte { get; set; }
 
         public DTE2 Dte2 { get; set; }
+
+        public IVsSolution VsSolution { get; set; }
+
+        public IVsShell VsShell { get; set; }
 
         #endregion
 
@@ -87,54 +90,46 @@ namespace NAntRunner
         {
             base.Initialize();
             NAntRunnerToolWindowCommand.Initialize(this);
-
-            IVsShell shellService = GetService(typeof(SVsShell)) as IVsShell;
-            if (shellService != null)
-                ErrorHandler.ThrowOnFailure(
-                  shellService.AdviseShellPropertyChanges(this, out _cookie));
-
-            _solution = base.GetService(typeof(SVsSolution)) as IVsSolution;
-
-            // Solution Event Handling
-            if (_solution != null)
-            {
-                _solutionEventHandler = new SolutionEventHandler(this);
-                _solution.AdviseSolutionEvents(_solutionEventHandler, out _solutionEventsCookie);
-            }
-
+            
+            InitializeVsObjects();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (_solutionEventsCookie != 0)
             {
-                _solution.UnadviseSolutionEvents(_solutionEventsCookie);
+                VsSolution.UnadviseSolutionEvents(_solutionEventsCookie);
                 _solutionEventsCookie = 0;
             }
-            _solutionEventHandler = null;
+            _solutionEventsHandler = null;
             base.Dispose(disposing);
         }
 
-        public int OnShellPropertyChange(int propid, object var)
+        /// <summary>
+        /// Initialize all Visual Studio Objects
+        /// </summary>
+        public void InitializeVsObjects()
         {
-            // when zombie state changes to false, finish package initialization
-            if ((int)__VSSPROPID.VSSPROPID_Zombie == propid)
+            Dte = GetService(typeof(SDTE)) as DTE;
+            Dte2 = GetService(typeof(SDTE)) as DTE2;
+            VsSolution = GetService(typeof(SVsSolution)) as IVsSolution;
+
+            if (Dte2 == null || Dte == null || VsSolution == null)
             {
-                if ((bool)var == false)
-                {
-                    Dte = GetService(typeof(SDTE)) as DTE;
-                    Dte2 = GetService(typeof(SDTE)) as DTE2;
-                    IVsShell shellService = GetService(typeof(SVsShell)) as IVsShell;
-
-                    if (shellService != null)
-                        ErrorHandler.ThrowOnFailure(
-                          shellService.UnadviseShellPropertyChanges(this._cookie));
-                    this._cookie = 0;
-                }
+                VsShell = GetService(typeof(SVsShell)) as IVsShell;
+                _shellPropertyEventsHandler = new ShellPropertyEventsHandler(VsShell, InitializeVsObjects);
             }
-            return VSConstants.S_OK;
-        }
+            else
+            {
+                _shellPropertyEventsHandler = null;
 
+                ToolWindowPane window = FindToolWindow(typeof(NAntRunnerToolWindow), 0, true);
+                _solutionEventsHandler = new SolutionEventsHandler(window.Content as NAntRunnerToolWindowControl);
+                VsSolution.AdviseSolutionEvents(_solutionEventsHandler, out _solutionEventsCookie);
+            }
+
+        }
+        
         #endregion
 
         #region Solution Event Handling 
@@ -142,16 +137,6 @@ namespace NAntRunner
         internal void HandleSolutionEvent(string eventName)
         {
             Debug.WriteLine(eventName);
-        }
-
-        // TODO delegate event to view class
-        public void OnAfterOpenSolution()
-        {
-        }
-
-        // TODO delegate event ot view class
-        public void OnAfterCloseSolution()
-        {
         }
 
         #endregion

@@ -72,8 +72,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Utils\SolutionEventHandler.cs" />
+    <Compile Include="Utils\SolutionEventsHandler.cs" />
     <Compile Include="Utils\VisualStudioUtils.cs" />
+    <Compile Include="Utils\ShellPropertyEventsHandler.cs" />
     <Compile Include="Views\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>

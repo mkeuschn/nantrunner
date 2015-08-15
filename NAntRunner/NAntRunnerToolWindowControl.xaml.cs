@@ -29,7 +29,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
 using NAntRunner.Common;
 using NAntRunner.Controller;
-using NAntRunner.Utils;
 using NAntRunner.Views;
 using NAntRunner.XML;
 
@@ -38,18 +37,86 @@ namespace NAntRunner
     /// <summary>
     /// Interaction logic for NAntRunnerToolWindowControl.
     /// </summary>
-    public partial class NAntRunnerToolWindowControl : UserControl, IVsSolutionEvents3
+    public partial class NAntRunnerToolWindowControl : UserControl
     {
+        #region Members
+
+        private readonly ViewController _viewController;
+
+        private ContextMenu _contextMenu = new ContextMenu { Name = "contextMenu" };
+
+        private MenuItem _start = new MenuItem
+        {
+            Name = "miStart",
+            Header = "Start",
+            Icon = new Image
+            {
+                Source = new BitmapImage(new Uri(AppConstants.IconStart))
+            }
+        };
+        private MenuItem _stop = new MenuItem
+        {
+            Name = "miStop",
+            Header = "Stop",
+            Icon = new Image
+            {
+                Source = new BitmapImage(new Uri(AppConstants.IconStop))
+            }
+        };
+        private MenuItem _edit = new MenuItem
+        {
+            Name = "miEdit",
+            Header = "Edit"
+        };
+        private MenuItem _expandAll = new MenuItem
+        {
+            Name = "miExpandAll",
+            Header = "ExpandAll"
+        };
+        private MenuItem _collapseAll = new MenuItem
+        {
+            Name = "miCollapseAll",
+            Header = "Collapse All"
+        };
+        private MenuItem _settings = new MenuItem
+        {
+            Name = "miSettings",
+            Header = "Settings",
+            Icon = new Image
+            {
+                Source = new BitmapImage(new Uri(AppConstants.IconGear))
+            }
+        };
+
+        #endregion
+
+        #region Properties
+
+        public IVsSolution VsSolution
+        {
+            get
+            {
+                var package = NAntRunnerToolWindowCommand.Instance.ServiceProvider as NAntRunnerVsPackage;
+                return package?.VsSolution;
+            }
+        }
+
+        #endregion
+
+        #region Default Constructor
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NAntRunnerToolWindowControl"/> class.
         /// </summary>
         public NAntRunnerToolWindowControl()
         {
             this.InitializeComponent();
-            _viewController = new ViewController();
+            _viewController = ViewController.Instance;
             _viewController.NAntProcess.TargetCompleted += OnTargetCompleted;
             InitContextMenu();
         }
+
+        #endregion
 
         #region Toolbar Button Handler
 
@@ -59,7 +126,7 @@ namespace NAntRunner
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 DefaultExt = ".build",
-                Filter = "Build Files (*.build)|*.build|Text Files (*.txt)|*.txt"
+                Filter = _viewController.FileFilter
             };
             
 
@@ -169,62 +236,7 @@ namespace NAntRunner
         }
 
         #endregion
-
-        #region Members
-
-        private readonly ViewController _viewController;
-
-        private ContextMenu _contextMenu = new ContextMenu { Name = "contextMenu" };
-
-        private MenuItem _start = new MenuItem
-        {
-            Name = "miStart",
-            Header = "Start",
-            Icon = new Image
-            {
-                Source = new BitmapImage(new Uri(AppConstants.IconStart))
-            }
-        };
-        private MenuItem _stop = new MenuItem
-        {
-            Name = "miStop",
-            Header = "Stop",
-            Icon = new Image
-            {
-                Source = new BitmapImage(new Uri(AppConstants.IconStop))
-            }
-        };
-        private MenuItem _edit = new MenuItem
-        {
-            Name = "miEdit",
-            Header = "Edit"
-        };
-        private MenuItem _expandAll = new MenuItem
-        {
-            Name = "miExpandAll",
-            Header = "ExpandAll"
-        };
-        private MenuItem _collapseAll = new MenuItem
-        {
-            Name = "miCollapseAll",
-            Header = "Collapse All"
-        };
-        private MenuItem _settings = new MenuItem
-        {
-            Name = "miSettings",
-            Header = "Settings",
-            Icon = new Image
-            {
-                Source = new BitmapImage(new Uri(AppConstants.IconGear))
-            }
-        };
-
-        #endregion
-
-        #region Properties
-
-        #endregion
-
+        
         #region Private Methods
 
         private void InitContextMenu()
@@ -247,7 +259,7 @@ namespace NAntRunner
         /// <summary>
         /// 
         /// </summary>
-        private void RefreshView()
+        public void RefreshView()
         {
             bool isNAntRunning = _viewController.IsWorking;
             bool isNodeStartable = TreeViewController.IsNAntTarget(NAntTreeView.SelectedItem as TreeViewItem);
@@ -351,209 +363,6 @@ namespace NAntRunner
         {
             RefreshView();
             // TODO Set Focus to ToolWindow
-        }
-
-        #endregion
-
-        #region IVsSolutionEvents3 Events
-
-        int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents3.OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents3.OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents3.OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents3.OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents3.OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents3.OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents3.OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents3.OnBeforeCloseSolution(object pUnkReserved)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents3.OnAfterCloseSolution(object pUnkReserved)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents3.OnAfterMergeSolution(object pUnkReserved)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int OnBeforeOpeningChildren(IVsHierarchy pHierarchy)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int OnAfterOpeningChildren(IVsHierarchy pHierarchy)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int OnBeforeClosingChildren(IVsHierarchy pHierarchy)
-        {
-            return VSConstants.S_OK;
-        }
-
-        public int OnAfterClosingChildren(IVsHierarchy pHierarchy)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents3.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents2.OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents2.OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents2.OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents2.OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents2.OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents2.OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
-        {
-            // If autoload specified, just load default build file
-            if (Settings.Default.NANT_AUTOLOAD)
-            {
-                _viewController.Filename = _viewController.DefaultBuildFile;
-                OnReload(this, null);
-            }
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents2.OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents2.OnBeforeCloseSolution(object pUnkReserved)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents2.OnAfterCloseSolution(object pUnkReserved)
-        {
-            // If NAnt process is running, stop it
-            if (_viewController.IsWorking)
-            {
-                _viewController.StopTarget();
-                RefreshView();
-            }
-
-            // If autoload specified, just clean current build file
-            if (Settings.Default.NANT_AUTOLOAD)
-            {
-                _viewController.Filename = null;
-                NAntTreeView.Items.Clear();
-            }
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents2.OnAfterMergeSolution(object pUnkReserved)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents2.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnBeforeCloseSolution(object pUnkReserved)
-        {
-            return VSConstants.S_OK;
-        }
-
-        int IVsSolutionEvents.OnAfterCloseSolution(object pUnkReserved)
-        {
-            return VSConstants.S_OK;
         }
 
         #endregion

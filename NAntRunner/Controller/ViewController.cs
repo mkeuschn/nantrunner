@@ -10,13 +10,14 @@ namespace NAntRunner.Controller
     /// </summary>
     public class ViewController
     {
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public ViewController()
+        private static ViewController _instance;
+
+        private ViewController()
         {
             NAntProcess = new NAntProcess(this);
         }
+
+        public static ViewController Instance => _instance ?? (_instance = new ViewController());
 
         /// <summary>
         /// Get or set current DTE2 attribute (extensibility instance).
