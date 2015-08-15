@@ -2,6 +2,8 @@
 {
     public static class AppConstants
     {
+        public const string NAntRunner = "NAntRunner";
+
         /// <summary>
         /// Xml tree constants.
         /// </summary>

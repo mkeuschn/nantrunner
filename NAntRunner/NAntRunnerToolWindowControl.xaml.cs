@@ -127,7 +127,7 @@ namespace NAntRunner
         private void TreeViewItemOnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             // Get the selected node
-            XmlNode selectedNode = TreeViewUtils.GetNAntNode(sender as TreeViewItem);
+            XmlNode selectedNode = TreeViewController.GetNAntNode(sender as TreeViewItem);
             _viewController.CurrentNode = selectedNode;
 
             /*
@@ -145,7 +145,7 @@ namespace NAntRunner
 
         private void TreeViewItemOnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            XmlNode selectedNode = TreeViewUtils.GetNAntNode(sender as TreeViewItem);
+            XmlNode selectedNode = TreeViewController.GetNAntNode(sender as TreeViewItem);
             _viewController.CurrentNode = selectedNode;
 
             // TODO Open Context Menu
@@ -155,10 +155,10 @@ namespace NAntRunner
 
         private void TreeViewItemOnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            XmlNode selectedNode = TreeViewUtils.GetNAntNode(sender as TreeViewItem);
+            XmlNode selectedNode = TreeViewController.GetNAntNode(sender as TreeViewItem);
             _viewController.CurrentNode = selectedNode;
             
-            if (TreeViewUtils.IsNAntTarget(NAntTreeView.SelectedItem as TreeViewItem))
+            if (TreeViewController.IsNAntTarget(NAntTreeView.SelectedItem as TreeViewItem))
             { 
                 Start_Click(sender, e);
             }
@@ -250,7 +250,7 @@ namespace NAntRunner
         private void RefreshView()
         {
             bool isNAntRunning = _viewController.IsWorking;
-            bool isNodeStartable = TreeViewUtils.IsNAntTarget(NAntTreeView.SelectedItem as TreeViewItem);
+            bool isNodeStartable = TreeViewController.IsNAntTarget(NAntTreeView.SelectedItem as TreeViewItem);
 
             // Refresh buttons
             btnStart.IsEnabled = isNodeStartable & !isNAntRunning;
@@ -295,7 +295,7 @@ namespace NAntRunner
                     _viewController.LoadFile(_viewController.Filename);
 
                     // Create a corresponding visual tree
-                    TreeViewFactory.CreateTree(NAntTreeView, _viewController.NAntTree, _viewController.Filename);
+                    TreeViewController.CreateTree(NAntTreeView, _viewController.NAntTree, _viewController.Filename);
                 }
                 catch (Exception e1)
                 {

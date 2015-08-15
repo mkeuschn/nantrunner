@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using EnvDTE80;
+using NAntRunner.Common;
 using NAntRunner.Utils;
 using NAntRunner.XML;
 
@@ -48,7 +49,7 @@ namespace NAntRunner.Controller
         {
             get
             {
-                var package = NAntRunnerToolWindowCommand.Instance.ServiceProvider as NAntRunnerVSPackage;
+                var package = NAntRunnerToolWindowCommand.Instance.ServiceProvider as NAntRunnerVsPackage;
                 return package?.Dte2;
             }
         }
@@ -75,13 +76,14 @@ namespace NAntRunner.Controller
             // Autoclear console, if required
             if (Settings.Default.NANT_CLEAR_OUTPUT)
             {
-                VisualStudioUtils.GetConsole(ApplicationObject, "NAntAddin").Clear();
+                VisualStudioUtils.GetConsole(ApplicationObject, AppConstants.NAntRunner).Clear();
             }
 
             // Trace start build
-            WriteConsole(String.Format("{0}[NAntAddin]: Target '{1}' started...{0}{0}", 
+            WriteConsole(string.Format("{0}[{2}]: Target '{1}' started...{0}{0}", 
                          Environment.NewLine, 
-                         TargetNode["name"]));
+                         TargetNode["name"],
+                         AppConstants.NAntRunner));
         }
         
         public void Stop()
@@ -91,7 +93,7 @@ namespace NAntRunner.Controller
         
         public void WriteConsole(string message)
         {
-            VisualStudioUtils.GetConsole(ApplicationObject, "NAntAddin").OutputString(message);
+            VisualStudioUtils.GetConsole(ApplicationObject, AppConstants.NAntRunner).OutputString(message);
         }
         
         private void OnStart(object sender, DoWorkEventArgs e)
@@ -144,7 +146,7 @@ namespace NAntRunner.Controller
             catch (Exception e1)
             {
                 // Trace exception on console
-                WriteConsole("[NAntAddin]: Unexpected error occured while executing command: "
+                WriteConsole("[" + AppConstants.NAntRunner + "]: Unexpected error occured while executing command: "
                     + Environment.NewLine
                     + "\t" + nantCommand + nantArguments
                     + Environment.NewLine
@@ -181,13 +183,15 @@ namespace NAntRunner.Controller
             _nAntProcess      = null;
 
             if (e.Cancelled)
-                WriteConsole(string.Format("{0}[NAntAddin]: Target '{1}' aborted !{0}", 
+                WriteConsole(string.Format("{0}[{2}]: Target '{1}' aborted !{0}", 
                              Environment.NewLine, 
-                             TargetNode["name"]));
+                             TargetNode["name"],
+                             AppConstants.NAntRunner));
             else
-                WriteConsole(string.Format("{0}[NAntAddin]: Target '{1}' completed.{0}", 
+                WriteConsole(string.Format("{0}[{2}]: Target '{1}' completed.{0}", 
                              Environment.NewLine, 
-                             TargetNode["name"]));
+                             TargetNode["name"],
+                             AppConstants.NAntRunner));
 
             // Notify listeners that the process has exited
             TargetCompleted?.Invoke(this, new EventArgs());

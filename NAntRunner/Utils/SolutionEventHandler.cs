@@ -7,13 +7,13 @@ namespace NAntRunner.Utils
     {
         #region Members
 
-        private NAntRunnerVSPackage _package;
+        private NAntRunnerVsPackage _package;
 
         #endregion
 
         #region Construktor
 
-        public SolutionEventHandler(NAntRunnerVSPackage package)
+        public SolutionEventHandler(NAntRunnerVsPackage package)
         {
             _package = package;
         }

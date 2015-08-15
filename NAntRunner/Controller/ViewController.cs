@@ -25,7 +25,7 @@ namespace NAntRunner.Controller
         {
             get
             {
-                var package = NAntRunnerToolWindowCommand.Instance.ServiceProvider as NAntRunnerVSPackage;
+                var package = NAntRunnerToolWindowCommand.Instance.ServiceProvider as NAntRunnerVsPackage;
                 return package?.Dte2;
             }
         }

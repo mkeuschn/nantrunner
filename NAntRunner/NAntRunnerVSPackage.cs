@@ -41,7 +41,7 @@ namespace NAntRunner
     [ProvideToolWindow(typeof(NAntRunnerToolWindow))]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasMultipleProjects_string)]
-    public sealed class NAntRunnerVSPackage : Package, IVsShellPropertyEvents
+    public sealed class NAntRunnerVsPackage : Package, IVsShellPropertyEvents
     {
         /// <summary>
         /// NAntRunnerVSPackage GUID string.
@@ -49,9 +49,9 @@ namespace NAntRunner
         public const string PackageGuidString = "3c9d12d6-6cde-404c-b2bc-b22bde7b9cfe";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NAntRunnerVSPackage"/> class.
+        /// Initializes a new instance of the <see cref="NAntRunnerVsPackage"/> class.
         /// </summary>
-        public NAntRunnerVSPackage()
+        public NAntRunnerVsPackage()
         {
             // Inside this method you can place any initialization code that does not require
             // any Visual Studio service because at this point the package object is created but
@@ -142,6 +142,16 @@ namespace NAntRunner
         internal void HandleSolutionEvent(string eventName)
         {
             Debug.WriteLine(eventName);
+        }
+
+        // TODO delegate event to view class
+        public void OnAfterOpenSolution()
+        {
+        }
+
+        // TODO delegate event ot view class
+        public void OnAfterCloseSolution()
+        {
         }
 
         #endregion
