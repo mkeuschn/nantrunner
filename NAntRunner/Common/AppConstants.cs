@@ -43,6 +43,8 @@
         public static string IconStroke => IconPath + "Stroke.png";
         public static string IconRefresh => IconPath + "Synchronize_16xLG.png";
         public static string IconTest => IconPath + "test_16xLG.png";
+        public static string IconNAnt => IconPath + "NAnt.png";
+        public static string IconProperties => IconPath + "properties_16xLG.png";
 
         #endregion
     }

@@ -4,6 +4,9 @@ using NAntRunner.Controller;
 
 namespace NAntRunner.Utils
 {
+    /// <summary>
+    /// Solution Events
+    /// </summary>
     public class SolutionEventsHandler : IVsSolutionEvents
     {
         #region Members

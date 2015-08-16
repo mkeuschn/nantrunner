@@ -107,6 +107,7 @@
     <Resource Include="Resources\DynamicHelp_5659.png" />
     <Resource Include="Resources\folder_Open_16xLG.png" />
     <Resource Include="Resources\gear_16xLG.png" />
+    <Resource Include="Resources\NAnt.png" />
     <Content Include="Resources\NAntRunnerToolWindowCommand.png" />
     <Content Include="Resources\NAntRunnerVSPackage.ico" />
     <Resource Include="Resources\Open_6529.png" />
@@ -118,6 +119,7 @@
     <Resource Include="Resources\Symbols_Stop_16xLG.png" />
     <Resource Include="Resources\Synchronize_16xLG.png" />
     <Resource Include="Resources\test_16xLG.png" />
+    <Resource Include="Resources\properties_16xLG.png" />
     <Content Include="stylesheet.css" />
   </ItemGroup>
   <ItemGroup>

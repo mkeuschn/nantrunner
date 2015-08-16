@@ -1,6 +1,30 @@
-﻿using System.Collections.Generic;
+﻿// The MIT License(MIT)
+// 
+// Copyright(c) <year> <copyright holders>
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using NAntRunner.Common;
 using NAntRunner.XML;
 
@@ -87,18 +111,15 @@ namespace NAntRunner.Controller
             treeView.Items.Clear();
 
             // Create root node
-            TreeViewItem rootNode = new TreeViewItem
-            {
-                Header = title,
-                Tag = nantTree.Root
-            };
-
+            TreeViewItem rootNode = CreateImageTreeViewItem(title, AppConstants.IconNAnt);
+            rootNode.Tag = nantTree.Root; 
+            
             treeView.Items.Add(rootNode);
 
             // Build properties
             if (nantTree.Properties != null)
             {
-                TreeViewItem tvi = CreateTreeNode(nantTree.Properties, "Properties");
+                TreeViewItem tvi = CreateTreeNode(nantTree.Properties, "Properties", AppConstants.IconProperties);
                 rootNode.Items.Add(tvi);
             }
 
@@ -108,7 +129,7 @@ namespace NAntRunner.Controller
                 // Build public targets
                 if (nantTree.PublicTargets != null)
                 {
-                    TreeViewItem publicNodes = CreateTreeNode(nantTree.PublicTargets, "Public targets");
+                    TreeViewItem publicNodes = CreateTreeNode(nantTree.PublicTargets, "Public targets", AppConstants.IconGear);
                     rootNode.Items.Add(publicNodes);
                     publicNodes.IsExpanded = true;
                 }
@@ -116,7 +137,7 @@ namespace NAntRunner.Controller
                 // Build private targets
                 if (nantTree.PrivateTargets != null)
                 {
-                    TreeViewItem privateNodes = CreateTreeNode(nantTree.PrivateTargets, "Private targets");
+                    TreeViewItem privateNodes = CreateTreeNode(nantTree.PrivateTargets, "Private targets", AppConstants.IconGear);
                     rootNode.Items.Add(privateNodes);
                 }
             }
@@ -126,7 +147,7 @@ namespace NAntRunner.Controller
                 // Build all targets
                 if (nantTree.AllTargets != null)
                 {
-                    TreeViewItem allNodes = CreateTreeNode(nantTree.AllTargets, "Targets");
+                    TreeViewItem allNodes = CreateTreeNode(nantTree.AllTargets, "Targets", AppConstants.IconGear);
                     rootNode.Items.Add(allNodes);
                     allNodes.IsExpanded = true;
                 }
@@ -139,18 +160,19 @@ namespace NAntRunner.Controller
             rootNode.IsExpanded = true;
         }
 
-        
+
         /// <summary>
         /// Build a branch of NAnt Addin tree view from a list of NAntNode.
         /// </summary>
         /// <param name="nodes">The list of NAntNode to add.</param>
         /// <param name="title">The title of the branch.</param>
+        /// <param name="iconUri"></param>
         /// <returns>The root node of the branch.</returns>
-        public static TreeViewItem CreateTreeNode(IList<XmlNode> nodes, string title)
+        public static TreeViewItem CreateTreeNode(IList<XmlNode> nodes, string title, string iconUri)
         {
             // Parent node of the branch
-            TreeViewItem rootNode = new TreeViewItem {Header = title};
-
+            TreeViewItem rootNode = CreateImageTreeViewItem(title, iconUri);
+            
             // Children
             List<TreeViewItem> nodeChildren = nodes.Select(CreateTreeNode).ToList();
             
@@ -173,16 +195,32 @@ namespace NAntRunner.Controller
         {
             // Set the title of node with nantNode name
             string title = nantNode.Name;
-            
+
+            StackPanel header = new StackPanel {Orientation = Orientation.Horizontal};
+            TextBlock label = new TextBlock();
+            Image image = new Image();
+            header.Children.Add(image);
+            header.Children.Add(label);
+
             // For target/property we take the name of the target/property
-            if (nantNode.Name == AppConstants.NANT_XML_TARGET 
-                || nantNode.Name == AppConstants.NANT_XML_PROPERTY)
+            if (nantNode.Name == AppConstants.NANT_XML_TARGET)
+            {
                 title = nantNode["name"];
+                image.Source = new BitmapImage(new Uri(AppConstants.IconGear));
+            }
+
+            if (nantNode.Name == AppConstants.NANT_XML_PROPERTY)
+            {
+                title = nantNode["name"];
+                image.Source = new BitmapImage(new Uri(AppConstants.IconProperties));
+            }
+
+            label.Text = title;
 
             // Initialize the root node
             TreeViewItem root = new TreeViewItem
             {
-                Header = title,
+                Header = header,
                 Tag = nantNode
             };
 
@@ -204,6 +242,25 @@ namespace NAntRunner.Controller
             }
 
             return root;
+        }
+
+        /// <summary>
+        /// Create TreeViewItem with image.
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="imagePath"></param>
+        /// <returns></returns>
+        public static TreeViewItem CreateImageTreeViewItem(string title, string imagePath)
+        {
+            var tvi = new TreeViewItem();
+            var header = new StackPanel {Orientation = Orientation.Horizontal};
+            var text = new TextBlock {Text = title};
+            var image = new Image {Source = new BitmapImage(new Uri(imagePath))};
+            header.Children.Add(image);
+            header.Children.Add(text);
+            tvi.Header = header;
+
+            return tvi;
         }
     }
 }
