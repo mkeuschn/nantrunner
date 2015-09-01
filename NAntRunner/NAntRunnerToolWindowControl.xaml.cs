@@ -200,8 +200,9 @@ namespace NAntRunner
 
         private void TreeViewItemOnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            // TODO: Get Node From Sender ????
             // Get the selected node
-            XmlNode selectedNode = TreeViewController.GetNAntNode(sender as TreeViewItem);
+            XmlNode selectedNode = TreeViewController.GetNAntNode(NAntTreeView.SelectedItem as TreeViewItem);
             _viewController.CurrentNode = selectedNode;
 
             /*
@@ -219,7 +220,8 @@ namespace NAntRunner
 
         private void TreeViewItemOnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            XmlNode selectedNode = TreeViewController.GetNAntNode(sender as TreeViewItem);
+            // TODO: Get Node From Sender ????
+            XmlNode selectedNode = TreeViewController.GetNAntNode(NAntTreeView.SelectedItem as TreeViewItem);
             _viewController.CurrentNode = selectedNode;
 
             // TODO Open Context Menu
@@ -229,7 +231,8 @@ namespace NAntRunner
 
         private void TreeViewItemOnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            XmlNode selectedNode = TreeViewController.GetNAntNode(sender as TreeViewItem);
+            // TODO: Get Node From Sender ????
+            XmlNode selectedNode = TreeViewController.GetNAntNode(NAntTreeView.SelectedItem as TreeViewItem);
             _viewController.CurrentNode = selectedNode;
             
             if (TreeViewController.IsNAntTarget(NAntTreeView.SelectedItem as TreeViewItem))
