@@ -85,7 +85,9 @@
     <Compile Include="XML\XmlTreeFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Key.snk" />
     <None Include="packages.config" />
     <None Include="Settings.settings">
@@ -108,6 +110,14 @@
     <Resource Include="Resources\folder_Open_16xLG.png" />
     <Resource Include="Resources\gear_16xLG.png" />
     <Resource Include="Resources\NAnt.png" />
+    <Content Include="license.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\ant.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\NAntRunnerToolWindowCommand.png" />
     <Content Include="Resources\NAntRunnerVSPackage.ico" />
     <Resource Include="Resources\Open_6529.png" />
