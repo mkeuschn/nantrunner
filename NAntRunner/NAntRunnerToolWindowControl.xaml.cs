@@ -36,6 +36,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
 using NAntRunner.Common;
 using NAntRunner.Controller;
+using NAntRunner.ViewModel;
 using NAntRunner.Views;
 using NAntRunner.XML;
 
@@ -49,51 +50,7 @@ namespace NAntRunner
         #region Members
 
         private readonly ViewController _viewController;
-
-        private ContextMenu _contextMenu = new ContextMenu { Name = "contextMenu" };
-
-        private MenuItem _start = new MenuItem
-        {
-            Name = "miStart",
-            Header = "Start",
-            Icon = new Image
-            {
-                Source = new BitmapImage(new Uri(AppConstants.IconStart))
-            }
-        };
-        private MenuItem _stop = new MenuItem
-        {
-            Name = "miStop",
-            Header = "Stop",
-            Icon = new Image
-            {
-                Source = new BitmapImage(new Uri(AppConstants.IconStop))
-            }
-        };
-        private MenuItem _edit = new MenuItem
-        {
-            Name = "miEdit",
-            Header = "Edit"
-        };
-        private MenuItem _expandAll = new MenuItem
-        {
-            Name = "miExpandAll",
-            Header = "ExpandAll"
-        };
-        private MenuItem _collapseAll = new MenuItem
-        {
-            Name = "miCollapseAll",
-            Header = "Collapse All"
-        };
-        private MenuItem _settings = new MenuItem
-        {
-            Name = "miSettings",
-            Header = "Settings",
-            Icon = new Image
-            {
-                Source = new BitmapImage(new Uri(AppConstants.IconGear))
-            }
-        };
+        
 
         #endregion
 
@@ -108,6 +65,8 @@ namespace NAntRunner
             }
         }
 
+        public ViewNAntRunner ViewNAntRunner { get; set; }
+        
         #endregion
 
         #region Default Constructor
@@ -120,7 +79,10 @@ namespace NAntRunner
             this.InitializeComponent();
             _viewController = ViewController.Instance;
             _viewController.NAntProcess.TargetCompleted += OnTargetCompleted;
-            InitContextMenu();
+
+
+            ViewNAntRunner = new ViewNAntRunner();
+            DataContext = ViewNAntRunner;
         }
 
         #endregion
@@ -223,10 +185,6 @@ namespace NAntRunner
             // TODO: Get Node From Sender ????
             XmlNode selectedNode = TreeViewController.GetNAntNode(NAntTreeView.SelectedItem as TreeViewItem);
             _viewController.CurrentNode = selectedNode;
-
-            // TODO Open Context Menu
-            NAntTreeView.ContextMenu = _contextMenu;
-
         }
 
         private void TreeViewItemOnMouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -249,43 +207,12 @@ namespace NAntRunner
         
         #region Private Methods
 
-        private void InitContextMenu()
-        {
-            _contextMenu.Items.Clear();
-            _start.Click += Start_Click;
-            _contextMenu.Items.Add(_start);
-            _stop.Click += Stop_Click;
-            _contextMenu.Items.Add(_stop);
-            _edit.Click += OnEditTarget;
-            _contextMenu.Items.Add(_edit);
-            _expandAll.Click += OnExpandAll;
-            _contextMenu.Items.Add(_expandAll);
-            _collapseAll.Click += OnCollapseAll;
-            _contextMenu.Items.Add(_collapseAll);
-            _settings.Click += Settings_Click;
-            _contextMenu.Items.Add(_settings);
-        }
-
         /// <summary>
         /// 
         /// </summary>
         public void RefreshView()
         {
-            bool isNAntRunning = _viewController.IsWorking;
-            bool isNodeStartable = TreeViewController.IsNAntTarget(NAntTreeView.SelectedItem as TreeViewItem);
-
-            // Refresh buttons
-            btnStart.IsEnabled = isNodeStartable & !isNAntRunning;
-            btnRefresh.IsEnabled = !isNAntRunning && _viewController.Filename != null;
-            btnHelp.IsEnabled = true;
-            btnSettings.IsEnabled = !isNAntRunning;
-            btnStop.IsEnabled = isNAntRunning;
-
-            // Refresh menus
-            _start.IsEnabled = isNodeStartable && !isNAntRunning;
-            _stop.IsEnabled = isNodeStartable && isNAntRunning;
-            _edit.IsEnabled = isNodeStartable && !isNAntRunning;
-            _settings.IsEnabled = !isNAntRunning;
+            ViewNAntRunner.Update(TreeViewController.IsNAntTarget(NAntTreeView.SelectedItem as TreeViewItem));
         }
 
         #endregion

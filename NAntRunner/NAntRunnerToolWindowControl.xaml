@@ -3,12 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:common="clr-namespace:NAntRunner.Common"
+             xmlns:converter="clr-namespace:NAntRunner.Utils.Converter"
              Background="{DynamicResource VsBrush.Window}"
              Foreground="{DynamicResource VsBrush.WindowText}"
+             DataContext="{Binding RelativeSource={RelativeSource Self}, Path=ViewNAntRunner}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              Name="MyToolWindow">
     <Grid>
+        <Grid.Resources>
+            <common:AppConstants x:Key="AppConstants"/>
+            <converter:PathToImageConverter x:Key="PathToImageConverter" />
+        </Grid.Resources>
         <DockPanel>
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar x:Name="toolBar">
@@ -18,23 +25,23 @@
                             <TextBlock Margin="3,0,0,0">Open</TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button x:Name="btnRefresh" Click="Refresh_Click" ToolTip="Refresh">
+                    <Button x:Name="btnRefresh" Click="Refresh_Click" ToolTip="Refresh" IsEnabled="{Binding IsRefreshEnabled}" >
                         <StackPanel Orientation="Horizontal">
                             <Image Source="pack://application:,,,/NAntRunner;component/Resources/Restart_6322.png" />
                             <TextBlock Margin="3,0,0,0">Refresh</TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button x:Name="btnStart" Click="Start_Click" ToolTip="Start">
+                    <Button x:Name="btnStart" Click="Start_Click" ToolTip="Start" IsEnabled="{Binding IsStartEnabled}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="pack://application:,,,/NAntRunner;component/Resources/Symbols_Play_16xLG.png" />
                         </StackPanel>
                     </Button>
-                    <Button x:Name="btnStop" Click="Stop_Click" ToolTip="Stop">
+                    <Button x:Name="btnStop" Click="Stop_Click" ToolTip="Stop" IsEnabled="{Binding IsStopEnabled}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="pack://application:,,,/NAntRunner;component/Resources/Symbols_Stop_16xLG.png" />
                         </StackPanel>
                     </Button>
-                    <Button x:Name="btnSettings" Click="Settings_Click" ToolTip="Settings">
+                    <Button x:Name="btnSettings" Click="Settings_Click" ToolTip="Settings" IsEnabled="{Binding IsSettingEnabled}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="pack://application:,,,/NAntRunner;component/Resources/gear_16xLG.png" />
                         </StackPanel>
@@ -55,6 +62,19 @@
                         <EventSetter Event="MouseRightButtonUp" Handler="TreeViewItemOnMouseRightButtonUp"/>
                     </Style>
                 </TreeView.ItemContainerStyle>
+                <TreeView.ContextMenu>
+                    <ContextMenu x:Name="contextMenu">
+                        <MenuItem Name="miStart" Header="Start" Icon="{Binding Source={StaticResource AppConstants}, Path=IconStart, Converter={StaticResource PathToImageConverter}}" Click="Start_Click"
+                                  IsEnabled="{Binding Path=IsStartEnabled}"/>
+                        <MenuItem Name="miStop" Header="Stop" Icon="{Binding Source={StaticResource AppConstants}, Path=IconStop, Converter={StaticResource PathToImageConverter}}" Click="Stop_Click" 
+                                  IsEnabled="{Binding Path=IsStopEnabled}"/>
+                        <MenuItem Name="miEdit" Header="Edit" Click="OnEditTarget" IsEnabled="{Binding Path=IsEditEnabled}"/>
+                        <MenuItem Name="miExpandAll" Header="ExpandAll" Click="OnExpandAll" />
+                        <MenuItem Name="miCollapseAll" Header="CollapseAll" Click="OnCollapseAll" />
+                        <MenuItem Name="miSettings" Header="Settings" Icon="{Binding Source={StaticResource AppConstants}, Path=IconGear, Converter={StaticResource PathToImageConverter}}" Click="Settings_Click" 
+                                  IsEnabled="{Binding Path=IsSettingEnabled}"/>
+                    </ContextMenu>
+                </TreeView.ContextMenu>
             </TreeView>
         </DockPanel>
     </Grid>

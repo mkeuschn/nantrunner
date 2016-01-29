@@ -1,6 +1,6 @@
 ﻿namespace NAntRunner.Common
 {
-    public static class AppConstants
+    public  class AppConstants
     {
         public const string NAntRunner = "NAntRunner";
 
