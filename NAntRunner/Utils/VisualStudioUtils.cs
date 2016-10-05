@@ -23,6 +23,8 @@
 using System;
 using EnvDTE;
 using EnvDTE80;
+using System.Linq;
+using NAntRunner.Common;
 
 namespace NAntRunner.Utils
 {
@@ -49,7 +51,15 @@ namespace NAntRunner.Utils
         public static void ShowWindow(DTE2 applicationObject, string windowTitle)
         {
             if (windowTitle == "Output")
+            {
                 applicationObject.Windows.Item(Constants.vsWindowKindOutput).Activate();
+
+                var window = applicationObject.ToolWindows.OutputWindow;
+                var windowPane = window.OutputWindowPanes.OfType<OutputWindowPane>().FirstOrDefault(x => x.Name == AppConstants.NAntRunner);
+
+                if (windowPane != null)
+                    windowPane.Activate();
+            }
             else
                 applicationObject.Windows.Item(windowTitle).Activate();
         }
