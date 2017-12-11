@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="NAntRunner.Company.ef5710d0-d876-4a4b-91e2-b80bb15eb37a" Version="1.0" Language="en-US" Publisher="Company" />
+    <Identity Id="NAntRunner.Company.ef5710d0-d876-4a4b-91e2-b80bb15eb37a" Version="1.0.1" Language="en-US" Publisher="Company" />
     <DisplayName>NAntRunner</DisplayName>
     <Description xml:space="preserve">NAntRunner is Visual Studio Extension which can load NAnt build files to display targets and properties in a tree view.  It can be used to control NAnt builds directly from within Visual Studio without the need to use the command line. 
 
