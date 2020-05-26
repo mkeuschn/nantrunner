@@ -1,27 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-    <Metadata>
-        <Identity Id="NAntRunner.Company.ef5710d0-d876-4a4b-91e2-b80bb15eb37a" Version="1.0.1" Language="en-US" Publisher="Company" />
-        <DisplayName>NAntRunner</DisplayName>
-        <Description xml:space="preserve">NAntRunner is Visual Studio Extension which can load NAnt build files to display targets and properties in a tree view.  It can be used to control NAnt builds directly from within Visual Studio without the need to use the command line. 
+  <Metadata>
+    <Identity Id="NAntRunner.Company.ef5710d0-d876-4a4b-91e2-b80bb15eb37a" Version="1.0.1" Language="en-US" Publisher="Company" />
+    <DisplayName>NAntRunner</DisplayName>
+    <Description xml:space="preserve">NAntRunner is Visual Studio Extension which can load NAnt build files to display targets and properties in a tree view.  It can be used to control NAnt builds directly from within Visual Studio without the need to use the command line. 
 
 NAnt build tool is needed (http://nant.sourceforge.net/) and must be configured in NAnt Runner (C:\Program Files\nant\bin\NAnt)</Description>
-        <MoreInfo>https://github.com/mkeuschn/nantrunner</MoreInfo>
-        <License>license.txt</License>
-        <Icon>Resources\ant.ico</Icon>
-        <Tags>nant, build</Tags>
-    </Metadata>
-    <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0, 15.0]" />
-    </Installation>
-    <Dependencies>
-        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-        <Dependency Id="Microsoft.VisualStudio.MPF.14.0" DisplayName="Visual Studio MPF 14.0" d:Source="Installed" Version="[14.0]" />
-    </Dependencies>
-    <Assets>
-        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-    </Assets>
-    <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0.26606.0,16.0)" DisplayName="Visual Studio core editor" />
-    </Prerequisites>
+    <MoreInfo>https://github.com/mkeuschn/nantrunner</MoreInfo>
+    <License>license.txt</License>
+    <Icon>Resources\ant.ico</Icon>
+    <Tags>nant, build</Tags>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0, 17.0)" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+  </Assets>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0.26606.0,)" DisplayName="Visual Studio core editor" />
+  </Prerequisites>
 </PackageManifest>
